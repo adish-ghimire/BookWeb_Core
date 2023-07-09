@@ -4,19 +4,20 @@ using Book.Models;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace BookWeb.Controllers
+namespace BookWeb.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
-        private readonly ICategoryRepository _categoryRepo;
-        public CategoryController(ICategoryRepository db)
+        private readonly IUnitOfWork _unitOfWork;
+        public CategoryController(IUnitOfWork unitOfWork)
         {
-            _categoryRepo = db;
+            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
         {
-            List<Category> objCategoryList = _categoryRepo.GetAll().ToList();
+            List<Category> objCategoryList = _unitOfWork.Category.GetAll().ToList();
             return View(objCategoryList);
         }
 
@@ -28,36 +29,36 @@ namespace BookWeb.Controllers
         [HttpPost]
         public IActionResult Create(Category obj)
         {
-            if(obj.Name== obj.DisplayOrder.ToString())
+            if (obj.Name == obj.DisplayOrder.ToString())
             {
                 ModelState.AddModelError("name", "The DisplayOrder cannot exactly match the Name.");
             }
-           
+
             if (ModelState.IsValid)
             {
-                _categoryRepo.Add(obj);
-                _categoryRepo.Save();
+                _unitOfWork.Category.Add(obj);
+                _unitOfWork.Save();
                 TempData["success"] = "Category created successfully";
                 return RedirectToAction("Index", "Category");
 
             }
             return View();
-          
-        
+
+
         }
 
 
         public IActionResult Edit(int? id)
         {
-            if(id==null || id ==0)
+            if (id == null || id == 0)
             {
                 return NotFound();
             }
 
-            Category? categoryfromDb = _categoryRepo.Get(u=>u.Id==id);
+            Category? categoryfromDb = _unitOfWork.Category.Get(u => u.Id == id);
 
             //Category? categoryFromDb2 = _db.Categories.Where(u=>u.Id==id).FirstOrDefault();
-          
+
             if (categoryfromDb == null)
             {
                 return NotFound();
@@ -69,12 +70,12 @@ namespace BookWeb.Controllers
         [HttpPost]
         public IActionResult Edit(Category obj)
         {
-         
+
 
             if (ModelState.IsValid)
             {
-                _categoryRepo.Update(obj);
-                _categoryRepo.Save();
+                _unitOfWork.Category.Update(obj);
+                _unitOfWork.Save();
                 TempData["success"] = "Category updated successfully";
 
                 return RedirectToAction("Index");
@@ -87,8 +88,6 @@ namespace BookWeb.Controllers
 
 
 
-
-
         public IActionResult Delete(int? id)
         {
             if (id == null || id == 0)
@@ -96,7 +95,7 @@ namespace BookWeb.Controllers
                 return NotFound();
             }
 
-            Category? categoryfromDb = _categoryRepo.Get(u => u.Id == id);
+            Category? categoryfromDb = _unitOfWork.Category.Get(u => u.Id == id);
 
             if (categoryfromDb == null)
             {
@@ -109,14 +108,14 @@ namespace BookWeb.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePOST(int? id)
         {
-            Category? obj = _categoryRepo.Get(u => u.Id == id);
+            Category? obj = _unitOfWork.Category.Get(u => u.Id == id);
             if (obj == null)
             {
                 return NotFound();
             }
-            _categoryRepo.Remove(obj);
-            _categoryRepo.Save();
-             TempData["success"] = "Category deleted successfully";
+            _unitOfWork.Category.Remove(obj);
+            _unitOfWork.Save();
+            TempData["success"] = "Category deleted successfully";
 
             return RedirectToAction("Index");
 
