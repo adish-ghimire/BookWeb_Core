@@ -5,11 +5,11 @@ VisualStudioVersion = 17.6.33801.468
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookWeb", "BookWeb\BookWeb.csproj", "{E134AFB2-B4BF-495A-85C5-8B2A24624FDE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Book.DataAccess", "Book.DataAccess\Book.DataAccess.csproj", "{57D4D6CD-F77B-4E95-8CA5-91D52C61B80F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Book.DataAccess", "Book.DataAccess\Book.DataAccess.csproj", "{57D4D6CD-F77B-4E95-8CA5-91D52C61B80F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Book.Models", "Book.Models\Book.Models.csproj", "{5FF23449-6408-4218-B6B3-8DD1A03796BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Book.Models", "Book.Models\Book.Models.csproj", "{5FF23449-6408-4218-B6B3-8DD1A03796BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Book.Utility", "Book.Utility\Book.Utility.csproj", "{B1CB165F-4955-4986-AB20-C431733C116E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Book.Utility", "Book.Utility\Book.Utility.csproj", "{B1CB165F-4955-4986-AB20-C431733C116E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
