@@ -15,12 +15,14 @@ using Book.Utility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
+
 using Microsoft.Extensions.Logging;
 
 namespace BookWeb.Areas.Identity.Pages.Account
@@ -110,8 +112,20 @@ namespace BookWeb.Areas.Identity.Pages.Account
         public string? Role { get; set; }
         [ValidateNever]
         public IEnumerable<SelectListItem> RoleList { get; set; }
+            [Required]
+            public string Name { get; set; }
+            public string? StreetAddress { get; set; }
+            public string? City { get; set; }
+            public string? State { get; set; }
+            public string? PostalCode { get; set; }
+             public string? PhoneNumber { get; set; }
 
-    }
+          
+
+
+
+
+        }
 
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -137,6 +151,66 @@ namespace BookWeb.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
+        //public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        //{
+        //    returnUrl ??= Url.Content("~/");
+        //    ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+        //    if (ModelState.IsValid)
+        //    {
+        //        var user = CreateUser();
+
+        //        await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+        //        await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+        //        var result = await _userManager.CreateAsync(user, Input.Password);
+
+
+
+        //        if (result.Succeeded)
+        //        {
+        //            _logger.LogInformation("User created a new account with password.");
+        //            if(!String.IsNullOrEmpty(Input.Role))
+        //            {
+        //                await _userManager.AddToRoleAsync(user, Input.Role);
+
+        //            }
+        //            else
+        //            {
+        //                await _userManager.AddToRoleAsync(user, SD.Role_Customer);
+        //            }
+
+
+        //            var userId = await _userManager.GetUserIdAsync(user);
+        //            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        //            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        //            var callbackUrl = Url.Page(
+        //                "/Account/ConfirmEmail",
+        //                pageHandler: null,
+        //                values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+        //                protocol: Request.Scheme);
+
+        //            await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+        //                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+        //            if (_userManager.Options.SignIn.RequireConfirmedAccount)
+        //            {
+        //                return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+        //            }
+        //            else
+        //            {
+        //                await _signInManager.SignInAsync(user, isPersistent: false);
+        //                return LocalRedirect(returnUrl);
+        //            }
+        //        }
+        //        foreach (var error in result.Errors)
+        //        {
+        //            ModelState.AddModelError(string.Empty, error.Description);
+        //        }
+        //    }
+
+        //    // If we got this far, something failed, redisplay form
+        //    return Page();
+        //}
+
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
@@ -147,21 +221,33 @@ namespace BookWeb.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.StreetAddress = Input.StreetAddress;
+                user.City = Input.City;
+                user.Name = Input.Name;
+                //user.Name = Input.Name;
+                user.State = Input.State;
+                user.PostalCode = Input.PostalCode;
+                user.PhoneNumber = Input.PhoneNumber;
+
+                //if (Input.Role == SD.Role_Company)
+                //{
+                //    user.CompanyId = Input.CompanyId;
+                //}
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    if(!String.IsNullOrEmpty(Input.Role))
+
+                    if (!String.IsNullOrEmpty(Input.Role))
                     {
                         await _userManager.AddToRoleAsync(user, Input.Role);
-
                     }
                     else
                     {
                         await _userManager.AddToRoleAsync(user, SD.Role_Customer);
                     }
-
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -181,7 +267,14 @@ namespace BookWeb.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        if (User.IsInRole(SD.Role_Admin))
+                        {
+                            TempData["success"] = "New User Created Successfully";
+                        }
+                        else
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                        }
                         return LocalRedirect(returnUrl);
                     }
                 }
@@ -194,6 +287,7 @@ namespace BookWeb.Areas.Identity.Pages.Account
             // If we got this far, something failed, redisplay form
             return Page();
         }
+
 
         private ApplicationUser CreateUser()
         {
